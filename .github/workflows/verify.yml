@@ -1,0 +1,55 @@
+name: Verify project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: JavaScript contract suite
+        run: node test.mjs
+      - name: Python contract suite
+        run: python -m unittest -v
+      - name: Check browser module syntax
+        run: |
+          node --check app.mjs
+          node --check config.mjs
+          node --check engine.mjs
+      - name: Check website assets and sample contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for name in ("index.html", "style.css", "app.mjs", "config.mjs", "engine.mjs", "sample.json", "expected.json", "cases.json"):
+              assert Path(name).is_file(), f"Missing required website or contract asset: {name}"
+          page = Path("index.html").read_text(encoding="utf-8")
+          assert 'type="module"' in page, "HTML must load a module script"
+          json.loads(Path("sample.json").read_text(encoding="utf-8"))
+          json.loads(Path("expected.json").read_text(encoding="utf-8"))
+          cases = json.loads(Path("cases.json").read_text(encoding="utf-8"))
+          assert isinstance(cases, list) and cases, "Contract cases must be a nonempty list"
+          print(f"Website asset checks passed; {len(cases)} contract scenarios found")
+          PY
