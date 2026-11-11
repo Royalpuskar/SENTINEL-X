@@ -1,0 +1,23 @@
+{
+  "processed": 4,
+  "alerts": [
+    {
+      "event": "evt-01",
+      "rule": "indicator-match",
+      "score": 85,
+      "evidence": [
+        "lab-indicator-1"
+      ]
+    },
+    {
+      "event": "evt-04",
+      "rule": "failed-login-burst",
+      "score": 70,
+      "evidence": [
+        "evt-02",
+        "evt-03",
+        "evt-04"
+      ]
+    }
+  ]
+}

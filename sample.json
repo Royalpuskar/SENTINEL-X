@@ -1,0 +1,41 @@
+{
+  "failure_threshold": 3,
+  "window_seconds": 60,
+  "indicators": [
+    {
+      "id": "lab-indicator-1",
+      "value": "192.0.2.44",
+      "confidence": 0.85,
+      "expires": 500
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-01",
+      "time": 100,
+      "source": "192.0.2.44",
+      "type": "connection"
+    },
+    {
+      "id": "evt-02",
+      "time": 110,
+      "source": "198.51.100.7",
+      "type": "login-failed",
+      "account": "demo"
+    },
+    {
+      "id": "evt-03",
+      "time": 120,
+      "source": "198.51.100.7",
+      "type": "login-failed",
+      "account": "demo"
+    },
+    {
+      "id": "evt-04",
+      "time": 130,
+      "source": "198.51.100.7",
+      "type": "login-failed",
+      "account": "demo"
+    }
+  ]
+}

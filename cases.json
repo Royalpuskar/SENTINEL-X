@@ -1,0 +1,143 @@
+[
+  {
+    "input": {
+      "events": []
+    },
+    "expected": {
+      "processed": 0,
+      "alerts": []
+    }
+  },
+  {
+    "input": {
+      "events": [
+        {
+          "id": "a",
+          "time": 1,
+          "source": "192.0.2.1",
+          "type": "connection"
+        }
+      ],
+      "indicators": [
+        {
+          "id": "i",
+          "value": "192.0.2.1",
+          "confidence": 0.8,
+          "expires": 2
+        }
+      ]
+    },
+    "expected": {
+      "processed": 1,
+      "alerts": [
+        {
+          "event": "a",
+          "rule": "indicator-match",
+          "score": 80,
+          "evidence": [
+            "i"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "failure_threshold": 2,
+      "events": [
+        {
+          "id": "a",
+          "time": 1,
+          "source": "192.0.2.1",
+          "type": "login-failed"
+        },
+        {
+          "id": "b",
+          "time": 2,
+          "source": "192.0.2.1",
+          "type": "login-failed"
+        }
+      ]
+    },
+    "expected": {
+      "processed": 2,
+      "alerts": [
+        {
+          "event": "b",
+          "rule": "failed-login-burst",
+          "score": 70,
+          "evidence": [
+            "a",
+            "b"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "failure_threshold": 3,
+      "window_seconds": 60,
+      "indicators": [
+        {
+          "id": "lab-indicator-1",
+          "value": "192.0.2.44",
+          "confidence": 0.85,
+          "expires": 500
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-01",
+          "time": 100,
+          "source": "192.0.2.44",
+          "type": "connection"
+        },
+        {
+          "id": "evt-02",
+          "time": 110,
+          "source": "198.51.100.7",
+          "type": "login-failed",
+          "account": "demo"
+        },
+        {
+          "id": "evt-03",
+          "time": 120,
+          "source": "198.51.100.7",
+          "type": "login-failed",
+          "account": "demo"
+        },
+        {
+          "id": "evt-04",
+          "time": 130,
+          "source": "198.51.100.7",
+          "type": "login-failed",
+          "account": "demo"
+        }
+      ]
+    },
+    "expected": {
+      "processed": 4,
+      "alerts": [
+        {
+          "event": "evt-01",
+          "rule": "indicator-match",
+          "score": 85,
+          "evidence": [
+            "lab-indicator-1"
+          ]
+        },
+        {
+          "event": "evt-04",
+          "rule": "failed-login-burst",
+          "score": 70,
+          "evidence": [
+            "evt-02",
+            "evt-03",
+            "evt-04"
+          ]
+        }
+      ]
+    }
+  }
+]
